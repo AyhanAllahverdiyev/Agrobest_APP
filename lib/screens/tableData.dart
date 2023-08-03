@@ -1,9 +1,13 @@
+///BUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+
 import 'package:flutter/material.dart';
+import 'logged.dart';
 
 class DataTableScreen extends StatelessWidget {
   final List<dynamic> data;
 
-  const DataTableScreen({required this.data});
+  DataTableScreen({required this.data});
+  LoggedPageState logged = LoggedPageState();
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +36,29 @@ class DataTableScreen extends StatelessWidget {
       allKeys.addAll(row.keys);
     });
 
-    return allKeys.map((String key) => DataColumn(label: Text(key))).toList();
+    return allKeys
+        .map((String key) => DataColumn(
+              label: Text(
+                key,
+              ),
+            ))
+        .toList();
   }
 
   List<DataRow> getRows() {
     return data.asMap().entries.map((entry) {
-      int index = entry.key;
       Map<String, dynamic> row = entry.value;
-      List<DataCell> cells =
-          row.values.map((value) => DataCell(Text(value.toString()))).toList();
-      Color? color = index % 2 == 0 ? Colors.white : Colors.grey.shade300;
-      return DataRow(
-          cells: cells, color: MaterialStateProperty.all<Color>(color));
+      List<DataCell> cells = row.values
+          .map((value) => DataCell(
+                Text(
+                  value.toString(),
+                  style: TextStyle(
+                      color: logged.isSwitchOn ? Colors.white : Colors.black),
+                ),
+              ))
+          .toList();
+
+      return DataRow(cells: cells);
     }).toList();
   }
 }

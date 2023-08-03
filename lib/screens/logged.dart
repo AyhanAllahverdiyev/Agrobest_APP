@@ -6,14 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/screens/sideMenu.dart';
 import 'package:flutter_application_1/utils/generic.dart';
-import 'package:flutter_application_1/services/getSQLservice.dart';
 
 final lightTheme = ThemeData(
   brightness: Brightness.light,
   primarySwatch: Colors.blue,
 );
 
-// Define dark theme
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   primarySwatch: Colors.blue,
@@ -26,8 +24,11 @@ class LoggedPage extends StatefulWidget {
   State<LoggedPage> createState() => LoggedPageState();
 }
 
+late bool _listSwitch = false;
+
 class LoggedPageState extends State<LoggedPage> {
-  bool _isSwitchOn = false;
+  late bool isSwitchOn;
+
   String? apiToken;
   String? refreshToken;
   String? userName;
@@ -41,25 +42,34 @@ class LoggedPageState extends State<LoggedPage> {
 
   bool _isSearchExpanded = false;
 
-  // Add a variable to keep track of the current theme mode
   late ThemeData _currentTheme;
+
+  LoggedPageState() {
+    isSwitchOn = false;
+    _currentTheme = isSwitchOn ? darkTheme : lightTheme;
+  }
 
   @override
   void initState() {
     super.initState();
     loadUserInfo();
     getApps();
-    // Set the initial theme mode based on the user's preference
-    _currentTheme = _isSwitchOn ? darkTheme : lightTheme;
   }
 
-//Shared_Preference'dan gerekli kullanici bilgilerini ceker
   void loadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       apiToken = prefs.getString('apiToken');
       userName = prefs.getString('userName');
       userEmail = prefs.getString('userEmail');
+    });
+  }
+
+  void toggleThemeMode() {
+    setState(() {
+      isSwitchOn = !isSwitchOn;
+      _currentTheme = isSwitchOn ? darkTheme : lightTheme;
+      getApps();
     });
   }
 
@@ -91,6 +101,13 @@ class LoggedPageState extends State<LoggedPage> {
             actions: [
               SizedBox(width: 40),
               IconButton(
+                onPressed: toggleThemeMode,
+                icon: Icon(
+                  isSwitchOn ? Icons.dark_mode : Icons.light_mode,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
                 onPressed: () => openCard(context, 'Mail'),
                 icon: const Icon(Icons.mail_outline),
                 color: Colors.white,
@@ -107,12 +124,12 @@ class LoggedPageState extends State<LoggedPage> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _isSwitchOn = !_isSwitchOn;
+                    _listSwitch = !_listSwitch;
                     getApps();
                   });
                 },
                 icon: Icon(
-                  _isSwitchOn ? Icons.list_alt_outlined : Icons.apps_outlined,
+                  _listSwitch ? Icons.list_alt_outlined : Icons.apps_outlined,
                   color: Colors.white,
                 ),
               ),
@@ -146,7 +163,7 @@ class LoggedPageState extends State<LoggedPage> {
                     color: Colors.black,
                   ),
                 ),
-                if (_isSwitchOn)
+                if (isSwitchOn)
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -217,7 +234,7 @@ class LoggedPageState extends State<LoggedPage> {
           String imageUrl = appData["imageUrl"];
           String iconUrl = appData["iconUrl"];
           String url = appData["url"];
-          if (_isSwitchOn) {
+          if (_listSwitch) {
             Widget button =
                 buildButtonList(context, title, imageUrl, iconUrl, url);
             appButtons.add(button);

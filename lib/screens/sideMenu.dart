@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/logged.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/getSQLservice.dart';
@@ -60,22 +61,28 @@ class NavDrawerState extends State<NavDrawer> {
             child: Container(),
           ),
           ListTile(
-            leading: const Icon(Icons.person_outlined, size: 35),
-            title: const Text('Profile'),
+            leading: const Icon(Icons.person_outlined, size: 30),
+            title: const Text(
+              'Profil',
+              style: TextStyle(fontSize: 17),
+            ),
             onTap: () {
               loadUserInfo(context);
             },
           ),
           ExpansionTile(
-            leading: const Icon(Icons.apps, size: 35),
-            title: const Text('Uygulamalar'),
+            leading: const Icon(Icons.apps, size: 30),
+            title: const Text(
+              'Uygulamalar',
+              style: TextStyle(fontSize: 17),
+            ),
             children: [
               if (names != null)
                 for (int i = 0; i < names!.length; i++)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.indigo,
-                      backgroundColor: Colors.indigo[100],
+                      shadowColor: const Color.fromARGB(0, 63, 81, 181),
+                      backgroundColor: const Color.fromARGB(0, 197, 202, 233),
                     ),
                     onPressed: () {
                       setState(() {
@@ -96,7 +103,7 @@ class NavDrawerState extends State<NavDrawer> {
                         Text(
                           names![i],
                           style: const TextStyle(
-                              color: Color.fromARGB(255, 65, 9, 70),
+                              color: Color.fromARGB(255, 86, 105, 211),
                               fontWeight: FontWeight.bold,
                               fontSize: 17),
                         ),
@@ -106,44 +113,31 @@ class NavDrawerState extends State<NavDrawer> {
             ],
           ),
           ExpansionTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Ayarlar'),
-            onExpansionChanged: (expanded) {
-              setState(() {
-                isAyarlarExpanded = expanded;
-              });
-            },
+            leading: const Icon(Icons.settings, size: 30),
+            title: const Text(
+              'Ayarlar',
+              style: TextStyle(fontSize: 17),
+            ),
             children: [
-              if (isAyarlarExpanded)
-                ListTile(
-                  title: const Text('Button 1'),
-                  onTap: () {
-                    // Action for Button 1
-                    // Example: Navigator.push(...);
-                    Navigator.of(context).pop();
-                  },
-                ),
-              if (isAyarlarExpanded)
-                ListTile(
-                  title: const Text('Button 2'),
-                  onTap: () {
-                    // Action for Button 2
-                    // Example: Navigator.push(...);
-                    Navigator.of(context).pop();
-                  },
-                ),
+              //IconButton(onPressed: () {}, icon: Icons.dark_mode_outlined)
             ],
           ),
           ListTile(
-            leading: const Icon(Icons.content_paste_search_outlined),
-            title: const Text('Sorgu'),
+            leading: const Icon(Icons.content_paste_search_outlined, size: 30),
+            title: const Text(
+              'Sorgu',
+              style: TextStyle(fontSize: 17),
+            ),
             onTap: () {
               getData(context);
             },
           ),
           ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text('Çıkış yap'),
+            leading: const Icon(Icons.exit_to_app, size: 30),
+            title: const Text(
+              'Çıkış yap',
+              style: TextStyle(fontSize: 17),
+            ),
             onTap: () async {
               logout(context);
               Navigator.of(context).pop();

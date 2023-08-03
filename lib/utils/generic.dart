@@ -341,13 +341,19 @@ Future<dynamic> showInputSQL(BuildContext context) async {
 
               Navigator.pop(context, query);
             },
-            child: Text("OK"),
+            child: Text(
+              "OK",
+              style: TextStyle(fontSize: 17),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context, null);
             },
-            child: Text("Cancel"),
+            child: Text(
+              "iptal",
+              style: TextStyle(fontSize: 17),
+            ),
           ),
         ],
       );
