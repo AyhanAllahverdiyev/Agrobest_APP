@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/loginService.dart';
+import '../services/refreshTokenService.dart';
 import 'logged.dart';
 import 'createAccount.dart';
-import 'intercepter.dart';
-import 'models/api_response_model.dart';
+import 'package:flutter_application_1/utils/generic.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   bool _isResumingFromBackground = false;
@@ -94,17 +95,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         _isLoading = false;
       });
     }
-  }
-
-  Future<void> saveUserInfo(String apiToken, String refreshToken,
-      String userName, String email) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('apiToken', apiToken);
-    await prefs.setString('refreshToken', refreshToken);
-    await prefs.setString('userName', userName);
-    await prefs.setString('userEmail', email);
-    print(
-        'API Token, Refresh Token, and User Info saved to shared preferences.');
   }
 
   @override

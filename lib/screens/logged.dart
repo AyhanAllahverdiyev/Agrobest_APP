@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/logout.dart';
-import 'package:flutter_application_1/main.dart';
+import 'package:flutter_application_1/services/logoutService.dart';
+import 'package:flutter_application_1/screens/main.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'sidemenu.dart';
-import 'intercepter.dart';
+import 'package:flutter_application_1/screens/sideMenu.dart';
+import 'package:flutter_application_1/utils/generic.dart';
+import 'package:flutter_application_1/services/getSQLservice.dart';
+
+final lightTheme = ThemeData(
+  brightness: Brightness.light,
+  primarySwatch: Colors.blue,
+);
+
+// Define dark theme
+final darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primarySwatch: Colors.blue,
+);
 
 class LoggedPage extends StatefulWidget {
   const LoggedPage({Key? key}) : super(key: key);
@@ -27,13 +39,21 @@ class LoggedPageState extends State<LoggedPage> {
 
   TextEditingController _searchController = TextEditingController();
 
+  bool _isSearchExpanded = false;
+
+  // Add a variable to keep track of the current theme mode
+  late ThemeData _currentTheme;
+
   @override
   void initState() {
     super.initState();
     loadUserInfo();
     getApps();
+    // Set the initial theme mode based on the user's preference
+    _currentTheme = _isSwitchOn ? darkTheme : lightTheme;
   }
 
+//Shared_Preference'dan gerekli kullanici bilgilerini ceker
   void loadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -43,153 +63,109 @@ class LoggedPageState extends State<LoggedPage> {
     });
   }
 
-  String extractNameFromUsername(String username) {
-    List<String> parts = username.split('@')[0].split('.');
-    if (parts.length == 2) {
-      String firstName = capitalize(parts[0]);
-      String lastName = capitalize(parts[1]);
-      return '$firstName $lastName';
-    }
-    return username;
-  }
-
-  String capitalize(String word) {
-    if (word.isEmpty) {
-      return '';
-    }
-    return word[0].toUpperCase() + word.substring(1);
-  }
-
-  void printUserInfo() {
-    print('API Token from shared preferences: $apiToken');
-    print('User Name from shared preferences: $userName');
-    print('User Email from shared preferences: $userEmail');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (_searchController.text.isNotEmpty) {
-          _searchController.clear();
-        }
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        drawer: const NavDrawer(),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 68, 54, 97),
-          leading: Builder(
-            builder: (context) => IconButton(
-              onPressed: () {
-                scaffoldKey.currentState?.openDrawer();
-              },
-              icon: const Icon(Icons.menu),
-              color: Colors.white,
-            ),
-          ),
-          actions: [
-            SizedBox(width: 80),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: TextField(
-                  autofocus: false,
-                  controller: _searchController,
-                  onChanged: (value) {
-                    print('SEARCH SEARCH SEARCH SEARCH SEARCH SEARCH');
-                    print(value);
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Ara...',
-                    border:
-                        OutlineInputBorder(borderSide: BorderSide(width: 30)),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        print('SEARCH SEARCH SEARCH SEARCH SEARCH SEARCH');
-                        print('');
-                        FocusScope.of(context).unfocus();
-                      },
-                      icon: Icon(Icons.clear),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () => openCard(context, 'Mail'),
-              icon: const Icon(Icons.mail_outline),
-              color: Colors.white,
-            ),
-            Builder(
+    return MaterialApp(
+      theme: _currentTheme,
+      home: GestureDetector(
+        onTap: () {
+          if (_searchController.text.isNotEmpty) {
+            _searchController.clear();
+          }
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          key: scaffoldKey,
+          drawer: const NavDrawer(),
+          appBar: AppBar(
+            backgroundColor: const Color.fromARGB(255, 68, 54, 97),
+            leading: Builder(
               builder: (context) => IconButton(
-                onPressed: () => openCard(context, 'Bildirimler'),
-                icon: const Icon(
-                  Icons.notifications_active_outlined,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSwitchOn = !_isSwitchOn;
-                  getApps();
-                });
-              },
-              icon: Icon(
-                _isSwitchOn ? Icons.list_alt_outlined : Icons.apps_outlined,
+                onPressed: () {
+                  scaffoldKey.currentState?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
                 color: Colors.white,
               ),
             ),
-            IconButton(
-              onPressed: () => openProfilePreview(context),
-              icon: Image.asset(
-                'assets/gigity.png',
-                width: 30,
-                height: 30,
+            actions: [
+              SizedBox(width: 40),
+              IconButton(
+                onPressed: () => openCard(context, 'Mail'),
+                icon: const Icon(Icons.mail_outline),
+                color: Colors.white,
               ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              const Center(
-                child: Text(
-                  'Hoşgeldin',
-                  style: TextStyle(fontSize: 15),
+              Builder(
+                builder: (context) => IconButton(
+                  onPressed: () => openCard(context, 'Bildirimler'),
+                  icon: const Icon(
+                    Icons.notifications_active_outlined,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              Text(
-                extractNameFromUsername(userName ?? 'N/A'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isSwitchOn = !_isSwitchOn;
+                    getApps();
+                  });
+                },
+                icon: Icon(
+                  _isSwitchOn ? Icons.list_alt_outlined : Icons.apps_outlined,
+                  color: Colors.white,
                 ),
               ),
-              if (_isSwitchOn)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: appButtons.length,
-                  itemBuilder: (context, index) => appButtons[index],
-                )
-              else
-                ...appButtons,
+              IconButton(
+                onPressed: () => openProfilePreview(context),
+                icon: Image.asset(
+                  'assets/gigity.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
             ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                const Center(
+                  child: Text(
+                    'Hoşgeldin',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+                Text(
+                  extractNameFromUsername(userName ?? 'N/A'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                if (_isSwitchOn)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: appButtons.length,
+                    itemBuilder: (context, index) => appButtons[index],
+                  )
+                else
+                  ...appButtons,
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+//appbardaki arama duymesinin basilinca actigi textbox  icin fonksiyon
+
+//Api'ye istek atarak uygulamalari alan fonksiyon
   void getApps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String apiUrl = 'http://192.168.0.155:5008/api/AppList/GetAppListFromToken';
@@ -256,6 +232,7 @@ class LoggedPageState extends State<LoggedPage> {
     }
   }
 
+//apiden gelen uygulama bilgilerine gore ekranda uygulamalarin butonunu yaratan fonksiyon
   Widget buildButton(BuildContext context, String title, String imagePath,
       String iconPath, String url) {
     return Padding(
@@ -290,6 +267,8 @@ class LoggedPageState extends State<LoggedPage> {
       ),
     );
   }
+
+//apiden gelen uygulama bilgilerine gore ekranda list  sekilde uygulamalarin butonunu yaratan fonksiyon
 
   Widget buildButtonList(BuildContext context, String title, String imagePath,
       String iconPath, String url) {
@@ -346,46 +325,7 @@ class LoggedPageState extends State<LoggedPage> {
     );
   }
 
-  void openCard(BuildContext context, String title) {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(button.size.topRight(Offset.zero),
-            ancestor: overlay),
-        button.localToGlobal(button.size.topRight(Offset.zero),
-            ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    showMenu(
-      color: Colors.blueGrey[50],
-      context: context,
-      position: const RelativeRect.fromLTRB(50, 80, 30, 50),
-      items: [
-        PopupMenuItem(
-          child: Row(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Card(
-                elevation: 1,
-                color: Colors.blueGrey[50],
-                child: Text(
-                  ' $title',
-                  style: const TextStyle(fontSize: 18, color: Colors.indigo),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
+//sol ustte yerlesen fotografa tiklaninca profil ekranini acan fonksiyon
   void openProfilePreview(BuildContext context) {
     showDialog(
       context: context,

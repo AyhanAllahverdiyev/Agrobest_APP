@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'intercepter.dart';
-import 'package:flutter_application_1/logout.dart';
-import 'package:flutter_application_1/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/getSQLservice.dart';
+import '../services/logoutService.dart';
+import '../utils/generic.dart';
 
 class NavDrawer extends StatefulWidget {
   const NavDrawer({Key? key}) : super(key: key);
@@ -12,7 +13,6 @@ class NavDrawer extends StatefulWidget {
 }
 
 class NavDrawerState extends State<NavDrawer> {
-  Apps apps = Apps();
   List<String>? names;
   List<String>? iconUrls;
   List<String>? urls;
@@ -43,6 +43,8 @@ class NavDrawerState extends State<NavDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    bool isAyarlarExpanded = false;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -61,7 +63,6 @@ class NavDrawerState extends State<NavDrawer> {
             leading: const Icon(Icons.person_outlined, size: 35),
             title: const Text('Profile'),
             onTap: () {
-              printAllShared();
               loadUserInfo(context);
             },
           ),
@@ -77,7 +78,6 @@ class NavDrawerState extends State<NavDrawer> {
                       backgroundColor: Colors.indigo[100],
                     ),
                     onPressed: () {
-                      UrlLauncher(urls![i]);
                       setState(() {
                         selectedApp = names![i];
                       });
@@ -105,29 +105,50 @@ class NavDrawerState extends State<NavDrawer> {
                   ),
             ],
           ),
-          ListTile(
+          ExpansionTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () => Navigator.of(context).pop(),
+            title: const Text('Ayarlar'),
+            onExpansionChanged: (expanded) {
+              setState(() {
+                isAyarlarExpanded = expanded;
+              });
+            },
+            children: [
+              if (isAyarlarExpanded)
+                ListTile(
+                  title: const Text('Button 1'),
+                  onTap: () {
+                    // Action for Button 1
+                    // Example: Navigator.push(...);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              if (isAyarlarExpanded)
+                ListTile(
+                  title: const Text('Button 2'),
+                  onTap: () {
+                    // Action for Button 2
+                    // Example: Navigator.push(...);
+                    Navigator.of(context).pop();
+                  },
+                ),
+            ],
           ),
           ListTile(
-            leading: const Icon(Icons.border_color),
-            title: const Text('Feedback'),
-            onTap: () => Navigator.of(context).pop(),
+            leading: const Icon(Icons.content_paste_search_outlined),
+            title: const Text('Sorgu'),
+            onTap: () {
+              getData(context);
+            },
           ),
           ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Logout'),
-              onTap: () async {
-                logout(context);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
-              }),
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Çıkış yap'),
+            onTap: () async {
+              logout(context);
+              Navigator.of(context).pop();
+            },
+          ),
         ],
       ),
     );
@@ -187,89 +208,4 @@ class NavDrawerState extends State<NavDrawer> {
       },
     );
   }
-}
-
-class Apps {
-  Future<void> displayApps(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? names = prefs.getStringList('names');
-    List<String>? iconUrls = prefs.getStringList('iconUrls');
-    List<String>? urls = prefs.getStringList('urls');
-
-    if (names == null ||
-        iconUrls == null ||
-        urls == null ||
-        names.isEmpty ||
-        iconUrls.isEmpty ||
-        urls.isEmpty) {
-      print('Uygulama yok.');
-    } else {
-      Navigator.of(context).pop();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AppsScreen(
-            names: names,
-            iconUrls: iconUrls,
-            urls: urls,
-          ),
-        ),
-      );
-    }
-  }
-}
-
-class AppsScreen extends StatelessWidget {
-  final List<String>? names;
-  final List<String>? iconUrls;
-  final List<String>? urls;
-
-  const AppsScreen(
-      {Key? key,
-      required this.names,
-      required this.iconUrls,
-      required this.urls})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Apps'),
-      ),
-      body: ListView.builder(
-        itemCount: names!.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Image.network(
-              iconUrls![index],
-              height: 32,
-              width: 32,
-            ),
-            onTap: () {
-              print('test from onTap() call');
-            },
-            title: Text(names![index]),
-          );
-        },
-      ),
-    );
-  }
-}
-
-String extractNameFromUsername(String username) {
-  List<String> parts = username.split('@')[0].split('.');
-  if (parts.length == 2) {
-    String firstName = capitalize(parts[0]);
-    String lastName = capitalize(parts[1]);
-    return '$firstName $lastName';
-  }
-  return username;
-}
-
-String capitalize(String word) {
-  if (word.isEmpty) {
-    return '';
-  }
-  return word[0].toUpperCase() + word.substring(1);
 }
