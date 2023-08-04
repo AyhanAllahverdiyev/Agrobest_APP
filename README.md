@@ -9,5 +9,5 @@
 ![Screenshot_4](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/e9cb0a5f-7742-4da6-a85f-095b45e66d97)
 ![Screenshot_5](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/d4dfe17e-2161-4738-b61e-89ca76e1c610)
 ![Screenshot_6](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/9b965de7-dcd2-4771-9e22-ef52cf92fe09)
-![image](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/74a5bf89-4777-4fe0-a910-8d6f6d163327)
-![image](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/4d11ed89-c7b3-42aa-a8e4-5e19292b4f69)
+![WhatsApp Image 2023-08-04 at 5 18 08 PM](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/8bd94369-36c4-4bcb-86a5-c510a044a628)
+![WhatsApp Image 2023-08-04 at 5 18 26 PM](https://github.com/AyhanAllahverdiyev/Agrobest_APP/assets/115575562/fe89f997-c084-40ac-875f-803a9caf7b8b)
