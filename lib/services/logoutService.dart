@@ -39,6 +39,8 @@ Future<void> logout(BuildContext context) async {
     print('Error while logging out: $e');
   }
   printAllShared();
-  SharedPreferences prefs_Clear = await SharedPreferences.getInstance();
-  await prefs_Clear.clear();
+  clearSharedPrefs();
+  print('LIGHTLIGHTLIGHTLIGHTLIGHTLIGHTLIGHT');
+//  printAllShared();
+  print(prefs.getBool('isSwitchOn'));
 }

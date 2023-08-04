@@ -11,8 +11,14 @@ void updateValue(String nameOfValue, String newValue) async {
 }
 
 void clearSharedPrefs() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isSwitchOn = prefs.getBool('isSwitchOn') ?? false;
+
   SharedPreferences prefs_Clear = await SharedPreferences.getInstance();
   await prefs_Clear.clear();
+
+  SharedPreferences prefs_Save = await SharedPreferences.getInstance();
+  prefs_Save.setBool('isSwitchOn', isSwitchOn);
 }
 
 UrlLauncher(String link) async {

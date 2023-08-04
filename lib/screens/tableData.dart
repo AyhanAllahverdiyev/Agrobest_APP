@@ -1,12 +1,31 @@
-///BUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-
 import 'package:flutter/material.dart';
-import 'logged.dart';
+import 'package:flutter_application_1/screens/logged.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DataTableScreen extends StatelessWidget {
+class DataTableScreen extends StatefulWidget {
   final List<dynamic> data;
 
-  const DataTableScreen({required this.data});
+  DataTableScreen({required this.data});
+
+  @override
+  _DataTableScreenState createState() => _DataTableScreenState();
+}
+
+class _DataTableScreenState extends State<DataTableScreen> {
+  bool isSwitchOn = false; // Local variable to hold the isSwitchOn value
+
+  @override
+  void initState() {
+    super.initState();
+    loadSwitchState();
+  }
+
+  void loadSwitchState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isSwitchOn = prefs.getBool('isSwitchOn') ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +49,7 @@ class DataTableScreen extends StatelessWidget {
 
   List<DataColumn> getColumns() {
     Set<String> allKeys = {};
-    data.forEach((item) {
+    widget.data.forEach((item) {
       Map<String, dynamic> row = item;
       allKeys.addAll(row.keys);
     });
@@ -45,14 +64,29 @@ class DataTableScreen extends StatelessWidget {
   }
 
   List<DataRow> getRows() {
-    return data.asMap().entries.map((entry) {
+    return widget.data.asMap().entries.map((entry) {
       int index = entry.key;
       Map<String, dynamic> row = entry.value;
-      List<DataCell> cells =
-          row.values.map((value) => DataCell(Text(value.toString()))).toList();
-      Color? color = index % 2 == 0 ? Colors.white : Colors.grey.shade300;
-      return DataRow(
-          cells: cells, color: MaterialStateProperty.all<Color>(color));
+      List<DataCell> cells = row.values
+          .map((value) => DataCell(
+                Text(
+                  value.toString(),
+                  style: TextStyle(
+                      color: isSwitchOn ? Colors.white : Colors.black),
+                ),
+              ))
+          .toList();
+      if (isSwitchOn == false) {
+        Color? color = index % 2 == 0 ? Colors.white : Colors.grey.shade300;
+        return DataRow(
+            cells: cells, color: MaterialStateProperty.all<Color>(color));
+      } else {
+        Color? color = index % 2 == 0
+            ? Color.fromARGB(255, 52, 52, 53)
+            : const Color.fromARGB(255, 37, 37, 37);
+        return DataRow(
+            cells: cells, color: MaterialStateProperty.all<Color>(color));
+      }
     }).toList();
   }
 }

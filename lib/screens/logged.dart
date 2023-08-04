@@ -24,10 +24,19 @@ class LoggedPage extends StatefulWidget {
   State<LoggedPage> createState() => LoggedPageState();
 }
 
-late bool _listSwitch = false;
-
 class LoggedPageState extends State<LoggedPage> {
   late bool isSwitchOn;
+  late bool _listSwitch = false;
+
+  void saveLightModeToShared() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isSwitchOn', isSwitchOn);
+  }
+
+  void getLightMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isSwitchOn = prefs.getBool('isSwitchOn') ?? false;
+  }
 
   String? apiToken;
   String? refreshToken;
@@ -52,6 +61,7 @@ class LoggedPageState extends State<LoggedPage> {
   @override
   void initState() {
     super.initState();
+    getLightMode();
     loadUserInfo();
     getApps();
   }
@@ -68,7 +78,7 @@ class LoggedPageState extends State<LoggedPage> {
   void toggleThemeMode() {
     setState(() {
       isSwitchOn = !isSwitchOn;
-      _currentTheme = isSwitchOn ? darkTheme : lightTheme;
+      saveLightModeToShared();
       getApps();
     });
   }
@@ -76,7 +86,7 @@ class LoggedPageState extends State<LoggedPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: _currentTheme,
+      theme: isSwitchOn ? darkTheme : lightTheme,
       home: GestureDetector(
         onTap: () {
           if (_searchController.text.isNotEmpty) {
@@ -101,7 +111,11 @@ class LoggedPageState extends State<LoggedPage> {
             actions: [
               SizedBox(width: 40),
               IconButton(
-                onPressed: toggleThemeMode,
+                onPressed: () {
+                  setState(() {
+                    toggleThemeMode();
+                  });
+                },
                 icon: Icon(
                   isSwitchOn ? Icons.dark_mode : Icons.light_mode,
                   color: Colors.white,
@@ -179,8 +193,6 @@ class LoggedPageState extends State<LoggedPage> {
       ),
     );
   }
-
-//appbardaki arama duymesinin basilinca actigi textbox  icin fonksiyon
 
 //Api'ye istek atarak uygulamalari alan fonksiyon
   void getApps() async {

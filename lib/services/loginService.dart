@@ -7,8 +7,7 @@ import 'package:flutter_application_1/utils/generic.dart';
 
 Future<Map<String, dynamic>> loginInterceptor(
     String email, String password, BuildContext context) async {
-  SharedPreferences prefs_Clear = await SharedPreferences.getInstance();
-  await prefs_Clear.clear();
+  clearSharedPrefs();
   const String apiUrl = 'http://192.168.0.155:5008/api/Auth/Login';
 
   Map<String, dynamic> requestBody = {
