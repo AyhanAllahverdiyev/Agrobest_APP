@@ -11,36 +11,29 @@ Future<void> logout(BuildContext context) async {
 
   final username = await getUsername();
   final accessToken = await getAccessToken();
-  //final refreshToken = await getRefreshToken();
 
-  try {
-    Map<String, dynamic> requestBody = {
-      'userName': username,
-      'token': accessToken,
-    };
+  Map<String, dynamic> requestBody = {
+    'userName': username,
+    'token': accessToken,
+  };
 
-    http.Response response = await http.post(
-      Uri.parse("http://192.168.0.155:5008/api/Auth/Logout"),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
+  http.Response response = await http.post(
+    Uri.parse("http://192.168.0.155:5008/api/Auth/Logout"),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(requestBody),
+  );
 
-    print(response.body);
-    print(response.statusCode);
-    Map<String, dynamic> responseData = jsonDecode(response.body);
-    //Map<String, dynamic> apiResponse = responseData['apiResponse'];
-    String message = responseData['apiResponse']['messages'][0]['message'];
-    print('messagemessagemessagemessagemessage');
-    print(message);
-    showFadeawayMessage(context, message);
-  } catch (e) {
-    print('Error while logging out: $e');
-  }
+  Map<String, dynamic> responseData = jsonDecode(response.body);
+  //Map<String, dynamic> apiResponse = responseData['apiResponse'];
+  String message = responseData['apiResponse']['messages'][0]['message'];
+
+  showFadeawayMessage(context, message);
+
   printAllShared();
   clearSharedPrefs();
   print('LIGHTLIGHTLIGHTLIGHTLIGHTLIGHTLIGHT');
-//  printAllShared();
+
   print(prefs.getBool('isSwitchOn'));
 }

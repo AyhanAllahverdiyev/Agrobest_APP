@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/logged.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart';
 
 import '../services/getSQLservice.dart';
 import '../services/logoutService.dart';
@@ -140,7 +141,12 @@ class NavDrawerState extends State<NavDrawer> {
             ),
             onTap: () async {
               logout(context);
-              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+              );
             },
           ),
         ],
@@ -149,57 +155,120 @@ class NavDrawerState extends State<NavDrawer> {
   }
 
   void openProfilePreview(
-      BuildContext context, String userName, String userEmail) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: const AssetImage('assets/gigity.png'),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 68, 54, 97),
-                        width: 5,
+      BuildContext context, String userName, String userEmail) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? lightMode = prefs.getBool('isSwitchOn');
+
+    if (lightMode != null) {
+      if (lightMode == false) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: const AssetImage('assets/gigity.png'),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 68, 54, 97),
+                            width: 5,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    Text(
+                      extractNameFromUsername(userName ?? 'BOŞ'),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Mail: $userEmail',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color.fromARGB(255, 48, 48, 54),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  extractNameFromUsername(userName ?? 'BOŞ'),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Mail: $userEmail',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Color.fromARGB(255, 48, 48, 54),
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
-      },
-    );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: const AssetImage('assets/gigity.png'),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 68, 54, 97),
+                            width: 5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      extractNameFromUsername(userName ?? 'BOŞ'),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Mail: $userEmail',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }
+    } else {
+      lightMode = true;
+      prefs.setBool('isSwitchOn', lightMode);
+      openProfilePreview(context, userName ?? 'N/A', userEmail ?? 'N/A');
+    }
   }
 }

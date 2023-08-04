@@ -256,7 +256,12 @@ class LoggedPageState extends State<LoggedPage> {
           }
         }
       });
-    } else {
+    }
+    //  else if (response.statusCode == 400) {
+    //   getAccessToken();
+    //   getApps();
+    // }
+    else {
       print(header);
     }
   }
@@ -356,86 +361,110 @@ class LoggedPageState extends State<LoggedPage> {
 
 //sol ustte yerlesen fotografa tiklaninca profil ekranini acan fonksiyon
   void openProfilePreview(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 70,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: const AssetImage('assets/gigity.png'),
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 68, 54, 97),
-                        width: 5,
+    if (isSwitchOn == false) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 70,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: const AssetImage('assets/gigity.png'),
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 68, 54, 97),
+                          width: 5,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  extractNameFromUsername(userName ?? 'N/A'),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  color: const Color.fromARGB(255, 243, 242, 242),
-                  child: Text(
-                    '$userEmail',
+                  const SizedBox(height: 10),
+                  Text(
+                    extractNameFromUsername(userName ?? 'N/A'),
                     style: const TextStyle(
-                        fontSize: 20, color: Color.fromARGB(255, 48, 48, 54)),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          logout(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.exit_to_app,
-                          color: Colors.black,
-                        ),
-                        label: const Text(
-                          "Çıkış yap",
-                          style: TextStyle(fontSize: 15, color: Colors.black),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.grey[200]),
+                  const SizedBox(height: 10),
+                  Container(
+                    color: const Color.fromARGB(255, 243, 242, 242),
+                    child: Text(
+                      '$userEmail',
+                      style: const TextStyle(
+                          fontSize: 20, color: Color.fromARGB(255, 48, 48, 54)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.grey.shade700,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 70,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: const AssetImage('assets/gigity.png'),
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 68, 54, 97),
+                          width: 5,
                         ),
                       ),
                     ),
-                  ],
-                )
-              ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    extractNameFromUsername(userName ?? 'N/A'),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    //  color: Colors.white,
+                    child: Text(
+                      '$userEmail',
+                      style: const TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 }

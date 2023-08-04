@@ -4,6 +4,7 @@ import '../services/refreshTokenService.dart';
 import 'logged.dart';
 import 'createAccount.dart';
 import 'package:flutter_application_1/utils/generic.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -36,11 +37,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool isSwitchOn = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    getlightMode();
   }
 
   bool _isResumingFromBackground = false;
@@ -83,7 +86,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const LoggedPage(),
+            builder: (context) => LoggedPage(),
           ),
         );
       }
@@ -94,6 +97,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         _isLoading = false;
       });
     }
+  }
+
+  void getlightMode() async {
+    SharedPreferences prefs_Light = await SharedPreferences.getInstance();
+    setState(() {
+      isSwitchOn = prefs_Light.getBool('isSwitchOn') ?? false;
+    });
   }
 
   @override
